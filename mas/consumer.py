@@ -9,7 +9,7 @@ import rasa.core.agent as rasaAgent
 rasa_agent = rasaAgent.create_agent('/home/daniel/rasa/test/models/20211107-203001.tar.gz')
 
 
-class BuyerAgent(Agent):
+class ConsumerAgent(Agent):
      
     class Handler(CyclicBehaviour):
         async def run(self):
