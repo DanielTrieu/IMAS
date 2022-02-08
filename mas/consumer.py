@@ -19,7 +19,7 @@ class ConsumerAgent(Agent):
                 self.set ("to_agent",["market@talk.tcoop.org"])
                 print(user_inform)
                 
-                self.add_behaviour(self.DemandQuery())
+                self.add_behaviour(self.SupplyQuery())
 
     
     class UserHandler(CyclicBehaviour):
