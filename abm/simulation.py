@@ -43,11 +43,16 @@ if __name__ == "__main__":
 
     ufarmer1 = UserAgent("ufarmer1@talk.tcoop.org", "tcoop#2021")
     ufarmer1.set("to_agent", "farmer1@talk.tcoop.org")
-    ufarmer1.set("message_data", {"performative":"user_inform", "inform":"supply", "seller": "daniel","product":"carrot", "price":"34", "quantity":"500", "time_min":"15","time_max":"18"})
-    
+  
     future = ufarmer1.start()
+    ufarmer1.set("message_data", {"performative":"user_inform", "inform":"supply", "name": "daniel","product":"carrot", "price":"34", "quantity":"500", "time_current":"1","time_min":"15","time_max":"18"})
     asyncio.run(ufarmer1.send_message())
-   
+    time.sleep(2)
+    ufarmer1.set("message_data", {"performative":"user_inform", "inform":"supply", "name": "daniel","product":"carrot", "price":"34", "quantity":"600", "time_current":"2","time_min":"18","time_max":"18"})
+    asyncio.run(ufarmer1.send_message())
+
+
+
     future.result() # wait for receiver agent to be prepared.
     print("ufarmer1 running")
 
