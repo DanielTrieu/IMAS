@@ -31,7 +31,7 @@ if __name__ == "__main__":
     future = dummy.start()
     future.result()
 
-    #dummy.behav2.join()  # this join must not be awaited
+    dummy.behav2.join()  # this join must not be awaited
 
     print("Stopping agent.")
     dummy.stop()
