@@ -19,8 +19,8 @@ class DummyAgent(Agent):
 
     async def setup(self):
         print("Agent starting . . .")
-        self.behav = self.LongBehav()
-        self.add_behaviour(self.behav)
+        self.behav1 = self.LongBehav()
+        self.add_behaviour(self.behav1)
         self.behav2 = self.WaitingBehav()
         self.add_behaviour(self.behav2)
 
