@@ -125,7 +125,10 @@ class ConsumerAgent(Agent):
                 #msg.body = "Hello World"                    # Set the message content
 
                 await self.send(msg)
-                print("Propose sent to", to_agent )
+                print("query sent to", to_agent )
+
+
+                
 
    
 
