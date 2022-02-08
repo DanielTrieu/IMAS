@@ -110,7 +110,22 @@ class ConsumerAgent(Agent):
             else:
                 print("no matching Bot handle")
 
-     
+      class SupplyQuery(OneShotBehaviour):
+        async def run(self):
+            print("Query supply")
+            seller_list= self.get("seller_list")
+            for seller in seller_list:
+            
+                msg = Message(to=seller)    # Instantiate the message
+                metadata= self.get("cfp_data")
+                for key, value in metadata.items():
+                    msg.set_metadata(key, value)
+                msg.set_metadata("performative", "cfp")  # Set the "inform" FIPA performative
+                #msg.body = "Hello World"                    # Set the message content
+
+                await self.send(msg)
+                time.sleep(1)
+                print("CFP Message sent!", seller)
                   
 
 
