@@ -3,7 +3,7 @@ from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
-
+import asyncio
 
 class UserAgent(Agent):
 
@@ -20,17 +20,20 @@ class UserAgent(Agent):
             to_agent = self.get("to_agent")
         
             msg = Message(to=to_agent)    # Instantiate the message
-            metadata= self.get("message_data")
+            metadata = self.get("message_data")
+            for key, value in metadata.items():
+                msg.set_metadata(key, value)
+
             await self.send(msg)
-            print("Propose sent to", to_agent, metadata )
+            print("Propose sent to", msg )
     
     
     async def send_message(self):
         self.add_behaviour(self.MessageSend())
     
     async def setup(self):
-        usertemplate = Template()
-        self.add_behaviour(self.UserHandler(), usertemplate)
+        template = Template()
+        self.add_behaviour(self.MessageHandler(), template)
     
        
 
@@ -40,10 +43,11 @@ if __name__ == "__main__":
 
     ufarmer1 = UserAgent("ufarmer1@talk.tcoop.org", "tcoop#2021")
     ufarmer1.set("to_agent", "farmer1@talk.tcoop.org")
-    ufarmer1.set("message_data",{{"inform":"supply", "user_data":{"product":"carrot", "price":"34", "quantity":"50"}})
+    ufarmer1.set("message_data", {"performative":"user_inform", "inform":"supply", "seller": "daniel","product":"carrot", "price":"34", "quantity":"500", "time_min":"15","time_max":"18"})
     
     future = ufarmer1.start()
-    ufarmer1.add_behaviour(u)
+    asyncio.run(ufarmer1.send_message())
+   
     future.result() # wait for receiver agent to be prepared.
     print("ufarmer1 running")
 
