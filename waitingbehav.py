@@ -27,9 +27,6 @@ class DummyAgent(Agent):
 
 if __name__ == "__main__":
 
-    jid = input("JID> ")
-    passwd = getpass.getpass()
-
     dummy = DummyAgent("daniel@talk.tcoop.org", "tcoop#2021")
     future = dummy.start()
     future.result()
