@@ -1,4 +1,4 @@
-import time
+import time, copy
 from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
@@ -9,9 +9,19 @@ from spade.template import Template
 
 class FarmerAgent(Agent):
 
+
+    async def userhandle(self,user_inform):
+
+            if user_inform["inform"]=="supply":
+                self.set("supply_data", user_inform)
+                self.set ("to_agent",["market@talk.tcoop.org"])
+                print(user_inform)
+                
+                self.add_behaviour(self.Propose())
+
+    
     class UserHandler(CyclicBehaviour):
                 
-
         async def rasabot(message):
         
             reply ="sorry no reply"
@@ -39,23 +49,14 @@ class FarmerAgent(Agent):
 
             return reply_type, reply 
 
-      
-        async def userhandle(user_inform):
-
-            if user_inform["inform"]=="supply":
-                self.set("sell_data", user_inform["user_data"])
-                print( user_inform)
-                self.add_behaviour(self.Propose())
-
-
-        
+              
         
         async def run(self):
             
             msg_recv = await self.receive(1000000) # wait for a message for 10 seconds
 
             print()
-            print("Receive message", msg_recv)
+            print("Receive message user", msg_recv)
             print()
             # message from rasa
 
@@ -75,12 +76,13 @@ class FarmerAgent(Agent):
 
 
             elif msg_recv.get_metadata('performative')=="user_inform":
-                user_inform = msg_recv.get_metadata('inform_data')
-                await userhandle(user_inform)
+                user_inform = copy.deepcopy(msg_recv.metadata)
+                self.agent.set('sup')
+                user_inform['performative']="inform"
                 print(user_inform)
-               
-
-
+                await self.agent.userhandle(user_inform)
+                
+      
 
     class BotHandler(CyclicBehaviour):
         async def run(self):
@@ -88,7 +90,7 @@ class FarmerAgent(Agent):
             msg_recv = await self.receive(1000000) # wait for a message for 10 seconds
             
             print()
-            print("Receive message", msg_recv)
+            print("Receive message bot handle", msg_recv)
             print()
             
             if msg_recv.get_metadata('performative')=="cfp":
@@ -104,7 +106,7 @@ class FarmerAgent(Agent):
                 print ('new quantity', sell_data['quantity'])
 
             else:
-                print("no matching")
+                print("no matching Bot handle")
 
     
     class Propose(OneShotBehaviour):
@@ -114,7 +116,8 @@ class FarmerAgent(Agent):
             for agent in to_agent:
 
                 msg = Message(to=agent)    # Instantiate the message
-                metadata= self.get("sell_data")
+                metadata= self.get("supply_data")
+
                 for key, value in metadata.items():
                     msg.set_metadata(key, value)
                 msg.set_metadata("performative", "propose")  # Set the "inform" FIPA performative
@@ -146,22 +149,15 @@ class FarmerAgent(Agent):
             #await self.agent.stop()    
 
 
-    
-        
-    async def run_propose(self):
-            self.add_behaviour(self.Propose())
 
-    async def run_confirm(self):
-            self.add_behaviour(self.Confirm())
-    
-    async def run_selling_handler(self):
-            self.add_behaviour(self.Selling_handler())
 
+    
+    
     async def setup(self):
         usertemplate = Template()
         bottemplate = Template()
        
-        #template.set_metadata("performaivet", "inform")
+        usertemplate.set_metadata("performative", "user_inform")
         self.add_behaviour(self.UserHandler(), usertemplate)
         self.add_behaviour(self.BotHandler(), bottemplate)
         
@@ -170,9 +166,10 @@ class FarmerAgent(Agent):
 
 if __name__ == "__main__":
     Farmer = FarmerAgent("farmer1@talk.tcoop.org", "tcoop#2021")
-    Farmer.set("to_agent", "buyer@talk.tcoop.org/fjfe")
+    #Farmer.set("to_agent", "buyer@talk.tcoop.org/fjfe")
     #Seller.set("sell_data",{"product":"carrot", "price":"34", "quantity":"50"})
-    Farmer.set("confirm_data",{"product":"carrot", "price":"34", "quantity":"20"})
+    #Farmer.set("confirm_data",{"product":"carrot", "price":"34", "quantity":"20"})
+    Farmer.set("id", "0")
     future = Farmer.start()
     future.result() # wait for receiver agent to be prepared.
     print("Farmer 1 running")

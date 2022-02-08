@@ -16,6 +16,7 @@ class MarketAgent(Agent):
             if msg_rev.get_metadata('performative')=="propose":
                 
                 self.set("seller", str(msg_rev.sender))
+                
                 print (msg_rev)
                 #await self.add_behaviour(self.Accept_proposal())
 
