@@ -8,15 +8,28 @@ from spade.template import Template
 #rasa_agent = rasaAgent.create_agent('/home/daniel/rasa/test/models/20211104-131703.tar.gz')
 
 class FarmerAgent(Agent):
+    
+    
+    def add_data(self, data_store, data_id, data_add):
+        data= self.get(data_store)
+        data[data_id] = data_add
+        self.set(data_store, data)
+    
+       
 
-
+    
+    
     async def userhandle(self,user_inform):
 
             if user_inform["inform"]=="supply":
-                self.set("supply_data", user_inform)
+                inform_id=  user_inform["name"] + "-" + user_inform["product"] + "-" + user_inform["time_current"]
+                user_inform["inform_id"]= inform_id
+                self.add_data("supply_data",inform_id, user_inform)
+                self.set("propose_data", user_inform)
                 self.set ("to_agent",["market@talk.tcoop.org"])
                 print(user_inform)
-                
+                print ("supply data store")
+                print(self.get("supply_data"))
                 self.add_behaviour(self.Propose())
 
     
@@ -77,7 +90,6 @@ class FarmerAgent(Agent):
 
             elif msg_recv.get_metadata('performative')=="user_inform":
                 user_inform = copy.deepcopy(msg_recv.metadata)
-                self.agent.set('sup')
                 user_inform['performative']="inform"
                 print(user_inform)
                 await self.agent.userhandle(user_inform)
@@ -116,7 +128,7 @@ class FarmerAgent(Agent):
             for agent in to_agent:
 
                 msg = Message(to=agent)    # Instantiate the message
-                metadata= self.get("supply_data")
+                metadata= self.get("propose_data")
 
                 for key, value in metadata.items():
                     msg.set_metadata(key, value)
@@ -166,6 +178,7 @@ class FarmerAgent(Agent):
 
 if __name__ == "__main__":
     Farmer = FarmerAgent("farmer1@talk.tcoop.org", "tcoop#2021")
+    Farmer.set("supply_data", {})
     #Farmer.set("to_agent", "buyer@talk.tcoop.org/fjfe")
     #Seller.set("sell_data",{"product":"carrot", "price":"34", "quantity":"50"})
     #Farmer.set("confirm_data",{"product":"carrot", "price":"34", "quantity":"20"})

@@ -1,4 +1,4 @@
-import time
+import time, copy
 from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour,CyclicBehaviour
 from spade.message import Message
@@ -7,17 +7,30 @@ from spade.template import Template
          
 
 class MarketAgent(Agent):
-     
+
+    def add_data(self, data_store, data_id, data_add):
+        data= self.get(data_store)
+        data[data_id] = data_add
+        self.set(data_store, data)
+    
+    
+    
+    
     class Handler(CyclicBehaviour):
         async def run(self):
            
             msg_rev = await self.receive(100000) # wait for a message for 10 seconds
-                
+            print (msg_rev) 
             if msg_rev.get_metadata('performative')=="propose":
+                if msg_rev.get_metadata('inform')=="supply":
+                    data_rev= copy.deepcopy(msg_rev.metadata)
+                    data_rev["from"]= str(msg_rev.sender)
+                    self.agent.add_data("supply_data",data_rev["inform_id"], data_rev)
+                    print ("supply data store")
+                    print(self.get("supply_data"))
+              
+                                
                 
-                self.set("seller", str(msg_rev.sender))
-                
-                print (msg_rev)
                 #await self.add_behaviour(self.Accept_proposal())
 
 
@@ -72,6 +85,7 @@ class MarketAgent(Agent):
 if __name__ == "__main__":
     
     Market = MarketAgent("market@talk.tcoop.org", "tcoop#2021")
+    Market.set("supply_data", {})
 
     future =Market.start()
     Market.web.start(hostname="127.0.0.1", port="10000")
