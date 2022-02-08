@@ -14,8 +14,8 @@ class ConsumerAgent(Agent):
 
      async def userhandle(self,user_inform):
 
-            if user_inform["inform"]=="supply":
-                self.set("supply_data", user_inform)
+            if user_inform["inform"]=="demand":
+                self.set("demand_data", user_inform)
                 self.set ("to_agent",["market@talk.tcoop.org"])
                 print(user_inform)
                 
