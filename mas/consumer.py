@@ -117,11 +117,11 @@ class ConsumerAgent(Agent):
             for agent in to_agent:
 
                 msg = Message(to=agent)    # Instantiate the message
-                metadata= self.get("propose_data")
+                metadata= self.get("demand_data")
 
                 for key, value in metadata.items():
                     msg.set_metadata(key, value)
-                msg.set_metadata("performative", "propose")  # Set the "inform" FIPA performative
+                msg.set_metadata("performative", "query")  # Set the "inform" FIPA performative
                 #msg.body = "Hello World"                    # Set the message content
 
                 await self.send(msg)
